@@ -1,0 +1,492 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Birthday Card</title>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins&display=swap" rel="stylesheet" />
+    <script src="https://cdn.jsdelivr.net/npm/party-js@latest/bundle/party.min.js"></script>
+    <style>
+        * {
+            padding: 0;
+            margin: 0;
+            box-sizing: border-box;
+            font-family: "Poppins", sans-serif;
+        }
+
+        body {
+            background: linear-gradient(135deg, #ffe5d9 0%, #ffffff 100%);
+            overflow: hidden;
+            position: relative;
+        }
+
+        /* Balloons */
+        .balloon {
+            width: 100px;
+            height: 120px;
+            border-radius: 50%;
+            position: absolute;
+            bottom: -150px; /* Start below the screen */
+            animation: float 6s infinite ease-in;
+            z-index: 1; /* Ensure balloons are behind the card */
+        }
+
+        .balloon::before {
+            content: "";
+            width: 2px;
+            height: 80px;
+            background: #000;
+            position: absolute;
+            bottom: -80px;
+            left: 50%;
+            transform: translateX(-50%);
+        }
+
+        .balloon::after {
+            content: "";
+            width: 10px;
+            height: 10px;
+            background: #000;
+            border-radius: 50%;
+            position: absolute;
+            bottom: -90px;
+            left: 50%;
+            transform: translateX(-50%);
+        }
+
+        /* Balloon Floating Animation */
+        @keyframes float {
+            0% {
+                bottom: -150px;
+                transform: translateX(0) rotate(0deg);
+            }
+            50% {
+                transform: translateX(20px) rotate(5deg);
+            }
+            100% {
+                bottom: 100vh; /* Move to the top of the screen */
+                transform: translateX(-20px) rotate(-5deg);
+            }
+        }
+
+        /* Card Styles */
+        .card {
+            width: 500px;
+            height: 400px;
+            position: absolute;
+            margin: auto;
+            left: 0;
+            right: 0;
+            top: 0;
+            bottom: 0;
+            -webkit-perspective: 1200px;
+            perspective: 1200px;
+            transition: 1s;
+            transform-style: preserve-3d;
+            z-index: 2; /* Ensure the card is above the balloons */
+        }
+
+        .card:hover {
+            transform: rotate(-5deg) scale(1.05);
+        }
+
+        .card:hover .outside {
+            transform: rotateY(-130deg);
+        }
+
+        .outside,
+        .inside {
+            height: 100%;
+            width: 50%;
+            position: absolute;
+            left: 50.1%;
+            transition: transform 1s;
+        }
+
+        .inside {
+            background: linear-gradient(to right, #ffcccb, #ffebeb);
+            line-height: 3;
+            padding: 0 20px;
+            text-align: center;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-around;
+            align-items: center;
+            left: 50%;
+            transform: rotateY(180deg);
+        }
+
+        .outside {
+            -webkit-transform-style: preserve-3d;
+            transform-style: preserve-3d;
+            z-index: 1;
+            transform-origin: left;
+            transition: 2s;
+            cursor: pointer;
+        }
+
+        .front,
+        .back {
+            height: 100%;
+            width: 100%;
+            position: absolute;
+            -webkit-backface-visibility: hidden;
+            backface-visibility: hidden;
+            transform: rotateX(0deg);
+        }
+
+        .front {
+            background-color: #ffdde4;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .back {
+            transform: rotateY(180deg);
+            background: linear-gradient(to left, #e7e7e7, #ffffff 30%);
+        }
+
+        .cake {
+            width: 100%;
+            position: absolute;
+            bottom: 30px;
+            animation: cake-float 3s ease-in-out infinite; /* Unique animation for cake */
+        }
+
+        /* Cake Floating Animation */
+        @keyframes cake-float {
+            0%, 100% {
+                transform: translateY(0);
+            }
+            50% {
+                transform: translateY(-10px);
+            }
+        }
+
+        .top-layer,
+        .middle-layer,
+        .bottom-layer {
+            height: 80px;
+            width: 200px;
+            background-repeat: repeat;
+            background-size: 60px 100px;
+            background-position: 28px 0;
+            background-image: linear-gradient(
+                transparent 50px,
+                #e691b2 50px,
+                #e6d5ba 60px,
+                transparent 60px
+            ),
+            radial-gradient(circle at 30px 5px, #e691b2 30px, #e6d5ba 31px);
+            border-radius: 10px 10px 0 0;
+            position: relative;
+            margin: auto;
+            animation: layer-float 3s ease-in-out infinite;
+        }
+
+        @keyframes layer-float {
+            0%, 100% {
+                transform: translateY(0);
+            }
+            50% {
+                transform: translateY(-5px);
+            }
+        }
+
+        .middle-layer {
+            transform: scale(0.85);
+            top: 15px;
+            animation-delay: 0.2s;
+        }
+
+        .top-layer {
+            transform: scale(0.7);
+            top: 30px;
+            animation-delay: 0.4s;
+        }
+
+        .candle {
+            height: 45px;
+            width: 15px;
+            background: repeating-linear-gradient(
+                45deg,
+                #fd3018 0,
+                #fd3018 5px,
+                #ffa89e 5px,
+                #ffa89e 10px
+            );
+            position: absolute;
+            margin: auto;
+            left: 0;
+            right: 0;
+            bottom: 202px;
+            animation: flicker 1s infinite, glow 1.5s infinite alternate;
+        }
+
+        .candle:before {
+            content: "";
+            position: absolute;
+            height: 16px;
+            width: 16px;
+            background-color: #ffa500;
+            border-radius: 0 50% 50% 50%;
+            bottom: 48px;
+            transform: rotate(45deg);
+            left: -1px;
+            animation: flame 1s infinite;
+        }
+
+        .outside p {
+            font-size: 23px;
+            text-transform: uppercase;
+            margin-top: 30px;
+            text-align: center;
+            letter-spacing: 6px;
+            color: #000046;
+            animation: text-float 3s ease-in-out infinite;
+        }
+
+        .inside h1 {
+            font-size: 120px;
+            line-height: 120px;
+            animation: spin 2s linear infinite;
+        }
+
+        /* Sparkles */
+        .sparkles {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            top: 0;
+            left: 0;
+            pointer-events: none;
+            z-index: 1; /* Ensure sparkles are behind the card */
+        }
+
+        .sparkle {
+            position: absolute;
+            width: 10px;
+            height: 10px;
+            background: #fff;
+            border-radius: 50%;
+            animation: sparkle 2s infinite ease-in-out;
+        }
+    </style>
+</head>
+<body onload="startConfetti()">
+    <!-- Balloons -->
+    <div class="balloon"></div>
+    <div class="balloon"></div>
+    <div class="balloon"></div>
+    <div class="balloon"></div>
+    <div class="balloon"></div>
+    <div class="balloon"></div>
+
+    <!-- Card -->
+    <div class="card">
+        <div class="outside">
+            <div class="front">
+                <div class="cake">
+                    <div class="top-layer"></div>
+                    <div class="middle-layer"></div>
+                    <div class="bottom-layer"></div>
+                    <div class="candle"></div>
+                </div>
+            </div>
+            <div class="back"></div>
+        </div>
+        <div class="inside">
+            <!-- Add the Image Here -->
+            <img src="birthday2.jpeg" alt="Birthday Image" style="width: 100%; height: auto; border-radius: 10px; transform: rotateY(180deg);">
+            
+        </div>
+    </div>
+
+    <!-- Sparkles -->
+    <div class="sparkles">
+        <div class="sparkle" style="top: 10%; left: 20%; animation-delay: 0s;"></div>
+        <div class="sparkle" style="top: 30%; left: 50%; animation-delay: 0.5s;"></div>
+        <div class="sparkle" style="top: 60%; left: 80%; animation-delay: 1s;"></div>
+        <div class="sparkle" style="top: 80%; left: 40%; animation-delay: 1.5s;"></div>
+    </div>
+
+    <script>
+        // Confetti script (same as before)
+        var maxParticleCount = 300;
+        var particleSpeed = 2.2;
+        var startConfetti;
+        var stopConfetti;
+        var toggleConfetti;
+        var removeConfetti;
+
+        (function() {
+            startConfetti = startConfettiInner;
+            stopConfetti = stopConfettiInner;
+            toggleConfetti = toggleConfettiInner;
+            removeConfetti = removeConfettiInner;
+            var colors = ["DodgerBlue", "OliveDrab", "Gold", "Pink", "SlateBlue", "LightBlue", "Violet", "PaleGreen", "SteelBlue", "SandyBrown", "Chocolate", "Crimson"];
+            var streamingConfetti = false;
+            var animationTimer = null;
+            var particles = [];
+            var waveAngle = 0;
+
+            function resetParticle(particle, width, height) {
+                particle.color = colors[(Math.random() * colors.length) | 0];
+                particle.x = Math.random() * width;
+                particle.y = Math.random() * height - height;
+                particle.diameter = Math.random() * 10 + 5;
+                particle.tilt = Math.random() * 10 - 10;
+                particle.tiltAngleIncrement = Math.random() * 0.07 + 0.05;
+                particle.tiltAngle = 0;
+                return particle;
+            }
+
+            function startConfettiInner() {
+                var width = window.innerWidth;
+                var height = window.innerHeight;
+                window.requestAnimFrame = (function() {
+                    return window.requestAnimationFrame ||
+                        window.webkitRequestAnimationFrame ||
+                        window.mozRequestAnimationFrame ||
+                        window.oRequestAnimationFrame ||
+                        window.msRequestAnimationFrame ||
+                        function (callback) {
+                            return window.setTimeout(callback, 16.6666667);
+                        };
+                })();
+                var canvas = document.getElementById("confetti-canvas");
+                if (canvas === null) {
+                    canvas = document.createElement("canvas");
+                    canvas.setAttribute("id", "confetti-canvas");
+                    canvas.setAttribute("style", "display:block;z-index:999999;pointer-events:none");
+                    document.body.appendChild(canvas);
+                    canvas.width = width;
+                    canvas.height = height;
+                    window.addEventListener("resize", function() {
+                        canvas.width = window.innerWidth;
+                        canvas.height = window.innerHeight;
+                    }, true);
+                }
+                var context = canvas.getContext("2d");
+                while (particles.length < maxParticleCount)
+                    particles.push(resetParticle({}, width, height));
+                streamingConfetti = true;
+                if (animationTimer === null) {
+                    (function runAnimation() {
+                        context.clearRect(0, 0, window.innerWidth, window.innerHeight);
+                        if (particles.length === 0)
+                            animationTimer = null;
+                        else {
+                            updateParticles();
+                            drawParticles(context);
+                            animationTimer = requestAnimFrame(runAnimation);
+                        }
+                    })();
+                }
+            }
+
+            function stopConfettiInner() {
+                streamingConfetti = false;
+            }
+
+            function removeConfettiInner() {
+                stopConfetti();
+                particles = [];
+            }
+
+            function toggleConfettiInner() {
+                if (streamingConfetti)
+                    stopConfettiInner();
+                else
+                    startConfettiInner();
+            }
+
+            function drawParticles(context) {
+                var particle;
+                var x;
+                for (var i = 0; i < particles.length; i++) {
+                    particle = particles[i];
+                    context.beginPath();
+                    context.lineWidth = particle.diameter;
+                    context.strokeStyle = particle.color;
+                    x = particle.x + particle.tilt;
+                    context.moveTo(x + particle.diameter / 2, particle.y);
+                    context.lineTo(x, particle.y + particle.tilt + particle.diameter / 2);
+                    context.stroke();
+                }
+            }
+
+            function updateParticles() {
+                var width = window.innerWidth;
+                var height = window.innerHeight;
+                var particle;
+                waveAngle += 0.01;
+                for (var i = 0; i < particles.length; i++) {
+                    particle = particles[i];
+                    if (!streamingConfetti && particle.y < -15)
+                        particle.y = height + 100;
+                    else {
+                        particle.tiltAngle += particle.tiltAngleIncrement;
+                        particle.x += Math.sin(waveAngle);
+                        particle.y += (Math.cos(waveAngle) + particle.diameter + particleSpeed) * 0.5;
+                        particle.tilt = Math.sin(particle.tiltAngle) * 15;
+                    }
+                    if (particle.x > width + 20 || particle.x < -20 || particle.y > height) {
+                        if (streamingConfetti && particles.length <= maxParticleCount)
+                            resetParticle(particle, width, height);
+                        else {
+                            particles.splice(i, 1);
+                            i--;
+                        }
+                    }
+                }
+            }
+        })();
+
+        // Balloon Script
+        function createBalloons() {
+            const balloonContainer = document.createElement("div");
+            balloonContainer.style.position = "absolute";
+            balloonContainer.style.width = "100%";
+            balloonContainer.style.height = "100%";
+            balloonContainer.style.top = "0";
+            balloonContainer.style.left = "0";
+            balloonContainer.style.pointerEvents = "none";
+            document.body.appendChild(balloonContainer);
+
+            const colors = ["#ff6f61", "#6b5b95", "#88b04b", "#ffa500", "#92a8d1", "#ff69b4"];
+            const totalBalloons = 6; // Number of balloons to display at a time
+
+            function addBalloon() {
+                const balloon = document.createElement("div");
+                balloon.className = "balloon";
+                balloon.style.left = `${Math.random() * 100}%`; // Random horizontal position
+                balloon.style.animationDuration = `${6 + Math.random() * 4}s`; // Random speed
+                balloon.style.backgroundColor = colors[Math.floor(Math.random() * colors.length)]; // Random color
+                balloonContainer.appendChild(balloon);
+
+                // Remove balloon after it floats off-screen
+                setTimeout(() => {
+                    balloon.remove();
+                }, 10000); // Adjust time based on animation duration
+            }
+
+            // Add initial balloons
+            for (let i = 0; i < totalBalloons; i++) {
+                addBalloon();
+            }
+
+            // Add new balloons at random intervals
+            setInterval(() => {
+                if (balloonContainer.children.length < totalBalloons) {
+                    addBalloon();
+                }
+            }, 2000); // Add a new balloon every 2 seconds
+        }
+
+        // Start creating balloons
+        createBalloons();
+    </script>
+</body>
+</html>
